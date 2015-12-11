@@ -140,11 +140,12 @@ namespace ImageSorter
 
         private void LoadImagesFromPath(string path)
         {
-            LargeImagelist.ImageSize = new Size(256, 192);
+            LargeImagelist.ImageSize = new Size(128, 96);
+            LargeImagelist.ColorDepth = ColorDepth.Depth32Bit;  
             LargeImagelist.Images.Clear();
             this.listView1.Items.Clear();
 
-            List<string> filePathList = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories).ToList();
+            List<string> filePathList = Directory.GetFiles(path, "*.*", SearchOption.TopDirectoryOnly).ToList();
             if (filePathList != null)
             {
                 foreach (var filePath in filePathList)
@@ -153,8 +154,9 @@ namespace ImageSorter
                     {
                         FileInfo file = new FileInfo(filePath);
                         Image image = Image.FromFile(filePath);
-
-                        LargeImagelist.Images.Add(image);
+                        Image thumbnail = CreateThumbnail(image, 96);
+                        image.Dispose();
+                        LargeImagelist.Images.Add(thumbnail);
                         ListViewItem newItem = new ListViewItem();
                         newItem.ImageIndex = LargeImagelist.Images.Count - 1;
                         newItem.Text = file.Name;
@@ -168,6 +170,32 @@ namespace ImageSorter
                 }
             }
             this.listView1.LargeImageList = LargeImagelist;
+        }
+
+        /// <summary>
+        /// 从原始图像创建一个缩略图
+        /// </summary>
+        /// <param name="originalImage">从中创建缩略图的原始图像</param>
+        /// <param name="imageHeight">缩略图的高度</param>
+        /// <returns></returns>
+        static public Image CreateThumbnail(Image originalImage, int imageHeight)
+        {
+            float ratio = (float)originalImage.Width / originalImage.Height;
+            int imageWidth = (int)(imageHeight * ratio);
+
+            Image thumbnailImage = originalImage.GetThumbnailImage(imageWidth, imageHeight,
+                new System.Drawing.Image.GetThumbnailImageAbort(ThumbnailCallback), IntPtr.Zero);
+
+            return thumbnailImage;
+        }
+
+        /// <summary>
+        /// 扩展，但不是使用
+        /// </summary>
+        /// <returns>true</returns>
+        static private bool ThumbnailCallback()
+        {
+            return true;
         }
 
         #region 交换
