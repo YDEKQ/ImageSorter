@@ -26,11 +26,11 @@ namespace ImageSorter
             LargeImagelist.ImageSize = new Size(128, 96);
             LargeImagelist.ColorDepth = ColorDepth.Depth32Bit;
             this.listView1.LargeImageList = LargeImagelist;
+            this.listView1.AllowDrop = true;
+            this.numericUpDown1.Maximum = decimal.MaxValue;
 
             this.lbl_InputCheck.Text = string.Format("第一步，点“浏览”来选择带图片的文件夹。(。・・)ノ");
             this.lbl_OutputCheck.Text = string.Format("第二步，点“浏览”来选择一个文件夹存放排好序的图片。(￣︶￣)↗");
-            this.listView1.MouseDown += listView1_MouseDown;
-            this.listView1.MouseUp += listView1_MouseUp;
         }
 
         #region 输入文件夹
@@ -83,14 +83,10 @@ namespace ImageSorter
                 List<string> filePathList = Directory.GetFiles(inputPath, "*.*", SearchOption.TopDirectoryOnly).ToList();
                 if ((filePathList != null) && (filePathList.Count > 0))
                 {
-                    foreach (ListViewItem item in listView1.Items)
+                    foreach (var imageInfo in ImageInfoList)
                     {
-                        FileInfo file = item.Tag as FileInfo;
-                        if (filePathList.Contains(file.FullName) == false)
-                        {
-                            LargeImagelist.Images.RemoveByKey(file.Name);
-                            listView1.Items.Remove(item);
-                        }                            
+                        if (filePathList.Contains(imageInfo.File.FullName) == false)
+                            ImageInfoList.Remove(imageInfo);
                     }
                     LoadImagesFromPath(filePathList);
                 }
@@ -145,14 +141,15 @@ namespace ImageSorter
             string destPath = this.txt_OutputPath.Text;
             if (Directory.Exists(destPath) == true)
             {
-                if(listView1.Items.Count>0)
+                if (ImageInfoList.Count > 0)
                 {
-                    foreach (ListViewItem item in listView1.Items)
+                    decimal startIndex = this.numericUpDown1.Value;
+                    foreach (var imageInfo in ImageInfoList)
                     {
-                        FileInfo file = item.Tag as FileInfo;
+                        FileInfo file = imageInfo.File;
                         if (file != null)
                         {
-                            string newFilePath = Path.Combine(destPath, string.Format("{0}_{1}", item.Index, file.Name));
+                            string newFilePath = Path.Combine(destPath, string.Format("{0}_{1}", startIndex + ImageInfoList.IndexOf(imageInfo), file.Name));
                             file.CopyTo(newFilePath, true);
                         }
                     }
@@ -170,6 +167,7 @@ namespace ImageSorter
         #endregion
 
         #region 加载缩略图
+        List<clsImage> ImageInfoList = new List<clsImage>();
 
         private void LoadImagesFromPath(List<string> filePathList)
         {
@@ -177,118 +175,104 @@ namespace ImageSorter
             {
                 foreach (var filePath in filePathList)
                 {
-                    try
-                    {
-                        FileInfo file = new FileInfo(filePath);
-                        if (LargeImagelist.Images.ContainsKey(file.Name) == false)
-                        {
-                            Image image = Image.FromFile(filePath);
-                            Image thumbnail = CreateThumbnail(image, 96);
-                            image.Dispose();
-                            LargeImagelist.Images.Add(file.Name, thumbnail);
-                            ListViewItem newItem = new ListViewItem();
-                            newItem.Name = file.Name;
-                            newItem.ImageKey = file.Name;
-                            newItem.Text = file.Name;
-                            newItem.Tag = file;
-                            this.listView1.Items.Add(newItem);
-                        }
-                    }
-                    catch
-                    {
-                        continue;
-                    }
+                    FileInfo file = new FileInfo(filePath);
+
+                    if ((ImageInfoList.All(imageInfo => imageInfo.Name != file.Name) == true) && (clsImage.IsImage(file) == true))
+                        ImageInfoList.Add(new clsImage(file));
                 }
+
+                FreshListview(ImageInfoList);
             }            
         }
 
-        /// <summary>
-        /// 从原始图像创建一个缩略图
-        /// </summary>
-        /// <param name="originalImage">从中创建缩略图的原始图像</param>
-        /// <param name="imageHeight">缩略图的高度</param>
-        /// <returns></returns>
-        static public Image CreateThumbnail(Image originalImage, int imageHeight)
-        {
-            float ratio = (float)originalImage.Width / originalImage.Height;
-            int imageWidth = (int)(imageHeight * ratio);
-
-            Image thumbnailImage = originalImage.GetThumbnailImage(imageWidth, imageHeight,
-                new System.Drawing.Image.GetThumbnailImageAbort(ThumbnailCallback), IntPtr.Zero);
-
-            return thumbnailImage;
-        }
-
-        /// <summary>
-        /// 扩展，但不是使用
-        /// </summary>
-        /// <returns>true</returns>
-        static private bool ThumbnailCallback()
-        {
-            return true;
-        }
-
-        private void Clean()
+        private void FreshListview(List<clsImage> imageInfoList)
         {
             LargeImagelist.Images.Clear();
             this.listView1.Items.Clear();
+
+            if (imageInfoList != null)
+            {
+                foreach (var imageInfo in imageInfoList)
+                {
+                    this.LargeImagelist.Images.Add(imageInfo.Name, imageInfo.Thumbnail);
+
+                    ListViewItem newItem = new ListViewItem();
+                    newItem.Name = imageInfo.Name;
+                    newItem.Text = imageInfo.Name;
+                    newItem.ImageKey = imageInfo.Name;
+                    newItem.Tag = imageInfo;
+                    this.listView1.Items.Add(newItem);                    
+                }
+                this.lbl_ImageCount.Text = string.Format("Count：{0}", this.listView1.Items.Count);
+            }
+        }
+        private void Clean()
+        {
+            ImageInfoList.Clear();
+            FreshListview(ImageInfoList);
         }
 
         #endregion
 
         #region 交换
-        ListViewItem dragItem = null;
-        ListViewItem destItem = null;
 
-        void listView1_MouseDown(object sender, MouseEventArgs e)
+        private void listView1_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
+            clsImage imageInfo = e.Item.Tag as clsImage;
+            imageInfo.Selected = e.IsSelected;
+        }
+
+        private void listView1_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            listView1.DoDragDrop(e.Item, DragDropEffects.Move);
+        }
+
+        private void listView1_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Move;
+        }
+
+        private void listView1_DragDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetData(typeof(ListViewItem)) == null) return;
+
+            Point ptScreen = new Point(e.X, e.Y);
+            Point pt = listView1.PointToClient(ptScreen);
+            ListViewItem destItem = listView1.GetItemAt(pt.X, pt.Y);
+            if (destItem != null)
             {
-                dragItem = listView1.GetItemAt(e.X, e.Y);
+                clsImage destImageInfo = destItem.Tag as clsImage;
+                List<clsImage> selectedImageInfoList = null;
+
+                if (this.listView1.SelectedItems.Count > 0)
+                    selectedImageInfoList = ImageInfoList.FindAll(imageInfo => imageInfo.Selected == true);
+
+                if (selectedImageInfoList == null) return;
+                if (selectedImageInfoList.Count <= 0) return;
+                if (selectedImageInfoList.Contains(destImageInfo) == true) return;
+
+                ImageInfoList.RemoveAll(imageInfo => imageInfo.Selected == true);
+                if (destItem.Index < ImageInfoList.Count)
+                    ImageInfoList.InsertRange(destItem.Index, selectedImageInfoList);
+                else
+                    ImageInfoList.AddRange(selectedImageInfoList);
+
+                ImageInfoList.ForEach(imageInfo => imageInfo.Selected = false);
+
+                selectedImageInfoList.Clear();
+                FreshListview(ImageInfoList);
             }
         }
-        void listView1_MouseUp(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
-            {
-                destItem = listView1.GetItemAt(e.X, e.Y);
-                if ((dragItem != null) && (destItem != null) && (dragItem != destItem))
-                {
-                    //ExchangeItem(dragItem, destItem);
 
-                    if (destItem.Index > dragItem.Index) //向后拖
-                    {
-                        for (int i = dragItem.Index; i < destItem.Index; i++)
-                            ExchangeItem(this.listView1.Items[i], this.listView1.Items[i + 1]);
-                    }
-                    else //向前拖
-                    {
-                        for (int i = dragItem.Index; i > destItem.Index; i--)
-                            ExchangeItem(this.listView1.Items[i - 1], this.listView1.Items[i]);
-                    }
-                }
-            }
-        }
-
-        private void ExchangeItem(ListViewItem dragItem, ListViewItem destItem)
-        {
-            string dragImageKey = dragItem.ImageKey;
-            string dragName = dragItem.Text;
-            FileInfo dragfile = dragItem.Tag as FileInfo;
-
-            string destImageKey = destItem.ImageKey;
-            string destName = destItem.Text;
-            FileInfo destfile = destItem.Tag as FileInfo;
-
-            dragItem.ImageKey = destImageKey;
-            dragItem.Text = destName;
-            dragItem.Tag = destfile;
-
-            destItem.ImageKey = dragImageKey;
-            destItem.Text = dragName;
-            destItem.Tag = dragfile;
-        }
         #endregion
+
+
+
+
+
+
+
+
 
 
 

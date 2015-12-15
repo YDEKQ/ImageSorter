@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.listView1 = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.btn_InputView = new System.Windows.Forms.Button();
             this.btn_OutputView = new System.Windows.Forms.Button();
@@ -41,16 +42,20 @@
             this.txt_OutputPath = new System.Windows.Forms.TextBox();
             this.lbl_InputCheck = new System.Windows.Forms.Label();
             this.lbl_OutputCheck = new System.Windows.Forms.Label();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.clsImageBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.btn_FreshInput = new System.Windows.Forms.Button();
+            this.lbl_ImageCount = new System.Windows.Forms.Label();
+            this.clsImageBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.label3 = new System.Windows.Forms.Label();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.clsImageBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
             // listView1
             // 
             this.listView1.Alignment = System.Windows.Forms.ListViewAlignment.Default;
+            this.listView1.AllowDrop = true;
             this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1});
             this.tableLayoutPanel1.SetColumnSpan(this.listView1, 6);
@@ -58,21 +63,24 @@
             this.listView1.FullRowSelect = true;
             this.listView1.GridLines = true;
             this.listView1.Location = new System.Drawing.Point(3, 55);
-            this.listView1.MultiSelect = false;
             this.listView1.Name = "listView1";
             this.listView1.Size = new System.Drawing.Size(943, 606);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.listView1_ItemDrag);
+            this.listView1.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.listView1_ItemSelectionChanged);
+            this.listView1.DragDrop += new System.Windows.Forms.DragEventHandler(this.listView1_DragDrop);
+            this.listView1.DragEnter += new System.Windows.Forms.DragEventHandler(this.listView1_DragEnter);
             // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 6;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 61F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));
             this.tableLayoutPanel1.Controls.Add(this.listView1, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.btn_InputView, 2, 0);
             this.tableLayoutPanel1.Controls.Add(this.btn_OutputView, 5, 0);
@@ -84,6 +92,9 @@
             this.tableLayoutPanel1.Controls.Add(this.lbl_InputCheck, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.lbl_OutputCheck, 4, 1);
             this.tableLayoutPanel1.Controls.Add(this.btn_FreshInput, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.lbl_ImageCount, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.label3, 2, 3);
+            this.tableLayoutPanel1.Controls.Add(this.numericUpDown1, 3, 3);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -98,10 +109,10 @@
             // btn_InputView
             // 
             this.btn_InputView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btn_InputView.Location = new System.Drawing.Point(415, 1);
+            this.btn_InputView.Location = new System.Drawing.Point(395, 1);
             this.btn_InputView.Margin = new System.Windows.Forms.Padding(1);
             this.btn_InputView.Name = "btn_InputView";
-            this.btn_InputView.Size = new System.Drawing.Size(58, 24);
+            this.btn_InputView.Size = new System.Drawing.Size(78, 24);
             this.btn_InputView.TabIndex = 1;
             this.btn_InputView.Text = "浏览";
             this.btn_InputView.UseVisualStyleBackColor = true;
@@ -110,10 +121,10 @@
             // btn_OutputView
             // 
             this.btn_OutputView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btn_OutputView.Location = new System.Drawing.Point(889, 1);
+            this.btn_OutputView.Location = new System.Drawing.Point(869, 1);
             this.btn_OutputView.Margin = new System.Windows.Forms.Padding(1);
             this.btn_OutputView.Name = "btn_OutputView";
-            this.btn_OutputView.Size = new System.Drawing.Size(59, 24);
+            this.btn_OutputView.Size = new System.Drawing.Size(79, 24);
             this.btn_OutputView.TabIndex = 2;
             this.btn_OutputView.Text = "浏览";
             this.btn_OutputView.UseVisualStyleBackColor = true;
@@ -135,7 +146,7 @@
             this.txt_InputPath.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txt_InputPath.Location = new System.Drawing.Point(83, 3);
             this.txt_InputPath.Name = "txt_InputPath";
-            this.txt_InputPath.Size = new System.Drawing.Size(328, 21);
+            this.txt_InputPath.Size = new System.Drawing.Size(308, 21);
             this.txt_InputPath.TabIndex = 4;
             this.txt_InputPath.TextChanged += new System.EventHandler(this.txt_InputPath_TextChanged);
             // 
@@ -169,7 +180,7 @@
             this.txt_OutputPath.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txt_OutputPath.Location = new System.Drawing.Point(557, 3);
             this.txt_OutputPath.Name = "txt_OutputPath";
-            this.txt_OutputPath.Size = new System.Drawing.Size(328, 21);
+            this.txt_OutputPath.Size = new System.Drawing.Size(308, 21);
             this.txt_OutputPath.TabIndex = 7;
             this.txt_OutputPath.TextChanged += new System.EventHandler(this.txt_OutputPath_TextChanged);
             // 
@@ -197,10 +208,6 @@
             this.lbl_OutputCheck.Text = "label4";
             this.lbl_OutputCheck.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // clsImageBindingSource
-            // 
-            this.clsImageBindingSource.DataSource = typeof(ImageSorter.clsImage);
-            // 
             // btn_FreshInput
             // 
             this.btn_FreshInput.Location = new System.Drawing.Point(3, 667);
@@ -210,6 +217,39 @@
             this.btn_FreshInput.Text = "刷新";
             this.btn_FreshInput.UseVisualStyleBackColor = true;
             this.btn_FreshInput.Click += new System.EventHandler(this.btn_FreshInput_Click);
+            // 
+            // lbl_ImageCount
+            // 
+            this.lbl_ImageCount.AutoSize = true;
+            this.lbl_ImageCount.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lbl_ImageCount.Location = new System.Drawing.Point(83, 664);
+            this.lbl_ImageCount.Name = "lbl_ImageCount";
+            this.lbl_ImageCount.Size = new System.Drawing.Size(308, 30);
+            this.lbl_ImageCount.TabIndex = 11;
+            this.lbl_ImageCount.Text = "Count：0";
+            this.lbl_ImageCount.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // clsImageBindingSource
+            // 
+            this.clsImageBindingSource.DataSource = typeof(ImageSorter.clsImage);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label3.Location = new System.Drawing.Point(397, 664);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(74, 30);
+            this.label3.TabIndex = 12;
+            this.label3.Text = "输出序号:";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // numericUpDown1
+            // 
+            this.numericUpDown1.Location = new System.Drawing.Point(477, 667);
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(74, 21);
+            this.numericUpDown1.TabIndex = 13;
             // 
             // Form1
             // 
@@ -223,6 +263,7 @@
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.clsImageBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -243,6 +284,9 @@
         private System.Windows.Forms.Label lbl_OutputCheck;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.Button btn_FreshInput;
+        private System.Windows.Forms.Label lbl_ImageCount;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.NumericUpDown numericUpDown1;
 
 
 
