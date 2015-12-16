@@ -86,8 +86,10 @@ namespace ImageSorter
                     foreach (var imageInfo in ImageInfoList)
                     {
                         if (filePathList.Contains(imageInfo.File.FullName) == false)
-                            ImageInfoList.Remove(imageInfo);
+                            imageInfo.Selected = true;
                     }
+                    ImageInfoList.RemoveAll(imageInfo => imageInfo.Selected == true);
+
                     LoadImagesFromPath(filePathList);
                 }
                     
@@ -149,7 +151,7 @@ namespace ImageSorter
                         FileInfo file = imageInfo.File;
                         if (file != null)
                         {
-                            string newFilePath = Path.Combine(destPath, string.Format("{0}_{1}", startIndex + ImageInfoList.IndexOf(imageInfo), file.Name));
+                            string newFilePath = Path.Combine(destPath, string.Format("{0:D3}_{1}", (int)(startIndex + ImageInfoList.IndexOf(imageInfo)), file.Name));
                             file.CopyTo(newFilePath, true);
                         }
                     }

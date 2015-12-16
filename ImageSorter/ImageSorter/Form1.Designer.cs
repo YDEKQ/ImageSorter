@@ -44,12 +44,12 @@
             this.lbl_OutputCheck = new System.Windows.Forms.Label();
             this.btn_FreshInput = new System.Windows.Forms.Button();
             this.lbl_ImageCount = new System.Windows.Forms.Label();
-            this.clsImageBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.label3 = new System.Windows.Forms.Label();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.clsImageBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tableLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.clsImageBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.clsImageBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // listView1
@@ -80,7 +80,7 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 81F));
             this.tableLayoutPanel1.Controls.Add(this.listView1, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.btn_InputView, 2, 0);
             this.tableLayoutPanel1.Controls.Add(this.btn_OutputView, 5, 0);
@@ -229,10 +229,6 @@
             this.lbl_ImageCount.Text = "Count：0";
             this.lbl_ImageCount.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // clsImageBindingSource
-            // 
-            this.clsImageBindingSource.DataSource = typeof(ImageSorter.clsImage);
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
@@ -251,6 +247,10 @@
             this.numericUpDown1.Size = new System.Drawing.Size(74, 21);
             this.numericUpDown1.TabIndex = 13;
             // 
+            // clsImageBindingSource
+            // 
+            this.clsImageBindingSource.DataSource = typeof(ImageSorter.clsImage);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -262,8 +262,8 @@
             this.Text = "我可是一个正经的图片排序小能手呢 ～(￣▽￣～)(～￣▽￣)～";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.clsImageBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.clsImageBindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }
