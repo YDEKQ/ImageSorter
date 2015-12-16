@@ -153,7 +153,7 @@ namespace ImageSorter
                         FileInfo file = imageInfo.File;
                         if (file != null)
                         {
-                            string newFilePath = Path.Combine(destPath, string.Format("{0:D3}_{1}", (int)(startIndex + ImageInfoList.IndexOf(imageInfo)), file.Name));
+                            string newFilePath = Path.Combine(destPath, string.Format("{0:D3}_{1}", (int)(startIndex + ImageInfoList.IndexOf(imageInfo)), imageInfo.Name));
                             file.CopyTo(newFilePath, true);
                         }
                     }
@@ -181,11 +181,21 @@ namespace ImageSorter
                 {
                     FileInfo file = new FileInfo(filePath);
 
-                    if (ImageInfoList.Exists(imageInfo => imageInfo.Name == file.Name) == false)
+                    if (ImageInfoList.Exists(imageInfo => imageInfo.File.Name == file.Name) == false)
                     {
                         try
                         {
                             clsImage newImage = new clsImage(file);
+
+                            if (checkBox1.Checked == true)
+                            {
+                                int headLength = newImage.Name.IndexOf('_');
+                                string head = newImage.Name.Substring(0, headLength);
+                                int id = 0;
+                                if (int.TryParse(head, out id) == true)
+                                    newImage.Name = newImage.Name.Remove(0, headLength+1);
+                            }
+                           
                             ImageInfoList.Add(newImage);
                         }
                         catch

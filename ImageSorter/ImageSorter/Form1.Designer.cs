@@ -46,6 +46,7 @@
             this.lbl_ImageCount = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.clsImageBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
@@ -96,6 +97,7 @@
             this.tableLayoutPanel1.Controls.Add(this.lbl_ImageCount, 1, 3);
             this.tableLayoutPanel1.Controls.Add(this.label3, 2, 3);
             this.tableLayoutPanel1.Controls.Add(this.numericUpDown1, 3, 3);
+            this.tableLayoutPanel1.Controls.Add(this.checkBox1, 0, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -248,6 +250,19 @@
             this.numericUpDown1.Size = new System.Drawing.Size(74, 21);
             this.numericUpDown1.TabIndex = 13;
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Checked = true;
+            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.checkBox1.Location = new System.Drawing.Point(3, 29);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(74, 20);
+            this.checkBox1.TabIndex = 14;
+            this.checkBox1.Text = "无视序号";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
             // clsImageBindingSource
             // 
             this.clsImageBindingSource.DataSource = typeof(ImageSorter.clsImage);
@@ -288,6 +303,7 @@
         private System.Windows.Forms.Label lbl_ImageCount;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.CheckBox checkBox1;
 
 
 
