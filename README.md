@@ -12,6 +12,7 @@ windows的文件排序规则令人不够满意，除了按日期、按名称排�
   4、点击“我排好啦”。<br>
 
   如果在排序过程中，输入文件夹内的文件数量有个变化，请点刷新。<br>
+  支持软件内的Ctrl+X剪切和Ctrl+V粘贴操作，便于图片的批量移动。<br>
 
  
 ![](https://github.com/uintvalue/ImageSorter/blob/master/screenshot/screenshot.jpg)  
