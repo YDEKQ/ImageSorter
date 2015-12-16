@@ -71,6 +71,7 @@
             this.listView1.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.listView1_ItemSelectionChanged);
             this.listView1.DragDrop += new System.Windows.Forms.DragEventHandler(this.listView1_DragDrop);
             this.listView1.DragEnter += new System.Windows.Forms.DragEventHandler(this.listView1_DragEnter);
+            this.listView1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.listView1_KeyUp);
             // 
             // tableLayoutPanel1
             // 

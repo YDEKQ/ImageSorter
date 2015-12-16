@@ -31,6 +31,8 @@ namespace ImageSorter
 
             this.lbl_InputCheck.Text = string.Format("第一步，点“浏览”来选择带图片的文件夹。(。・・)ノ");
             this.lbl_OutputCheck.Text = string.Format("第二步，点“浏览”来选择一个文件夹存放排好序的图片。(￣︶￣)↗");
+
+            UpdateCount();
         }
 
         #region 输入文件夹
@@ -179,8 +181,18 @@ namespace ImageSorter
                 {
                     FileInfo file = new FileInfo(filePath);
 
-                    if ((ImageInfoList.All(imageInfo => imageInfo.Name != file.Name) == true) && (clsImage.IsImage(file) == true))
-                        ImageInfoList.Add(new clsImage(file));
+                    if (ImageInfoList.Exists(imageInfo => imageInfo.Name == file.Name) == false)
+                    {
+                        try
+                        {
+                            clsImage newImage = new clsImage(file);
+                            ImageInfoList.Add(newImage);
+                        }
+                        catch
+                        { 
+                        
+                        }
+                    }                        
                 }
 
                 FreshListview(ImageInfoList);
@@ -205,7 +217,7 @@ namespace ImageSorter
                     newItem.Tag = imageInfo;
                     this.listView1.Items.Add(newItem);                    
                 }
-                this.lbl_ImageCount.Text = string.Format("Count：{0}", this.listView1.Items.Count);
+                UpdateCount();
             }
         }
         private void Clean()
@@ -216,13 +228,22 @@ namespace ImageSorter
 
         #endregion
 
-        #region 交换
 
+        #region 选中
+        List<clsImage> selectedImageInfoList = null;
         private void listView1_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
             clsImage imageInfo = e.Item.Tag as clsImage;
             imageInfo.Selected = e.IsSelected;
+
+            if (this.listView1.SelectedItems.Count > 0)
+                selectedImageInfoList = ImageInfoList.FindAll(image => image.Selected == true);
+
+            UpdateCount();
         }
+        #endregion
+
+        #region 拖拽
 
         private void listView1_ItemDrag(object sender, ItemDragEventArgs e)
         {
@@ -244,30 +265,80 @@ namespace ImageSorter
             if (destItem != null)
             {
                 clsImage destImageInfo = destItem.Tag as clsImage;
-                List<clsImage> selectedImageInfoList = null;
-
-                if (this.listView1.SelectedItems.Count > 0)
-                    selectedImageInfoList = ImageInfoList.FindAll(imageInfo => imageInfo.Selected == true);
-
-                if (selectedImageInfoList == null) return;
-                if (selectedImageInfoList.Count <= 0) return;
-                if (selectedImageInfoList.Contains(destImageInfo) == true) return;
-
-                ImageInfoList.RemoveAll(imageInfo => imageInfo.Selected == true);
-                if (destItem.Index < ImageInfoList.Count)
-                    ImageInfoList.InsertRange(destItem.Index, selectedImageInfoList);
-                else
-                    ImageInfoList.AddRange(selectedImageInfoList);
-
-                ImageInfoList.ForEach(imageInfo => imageInfo.Selected = false);
-
-                selectedImageInfoList.Clear();
-                FreshListview(ImageInfoList);
+                Insert(destItem, selectedImageInfoList);
             }
         }
 
+        private void Insert(ListViewItem destItem, List<clsImage> selectedImageInfoList)
+        {
+            if (destItem == null) return;
+
+            clsImage destImageInfo = destItem.Tag as clsImage;
+
+            if (selectedImageInfoList == null) return;
+            if (selectedImageInfoList.Count <= 0) return;
+            if (selectedImageInfoList.Contains(destImageInfo) == true) return;
+
+            ImageInfoList.RemoveAll(imageInfo => imageInfo.Selected == true);
+            if (destItem.Index < ImageInfoList.Count)
+                ImageInfoList.InsertRange(destItem.Index, selectedImageInfoList);
+            else
+                ImageInfoList.AddRange(selectedImageInfoList);
+
+            ImageInfoList.ForEach(imageInfo => imageInfo.Selected = false);
+
+            selectedImageInfoList = null;
+            FreshListview(ImageInfoList);
+        }
         #endregion
 
+        #region 剪切
+        private List<clsImage> cutImageInfoList = null;
+        private void listView1_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Control == true)
+            {
+                if (e.KeyCode == Keys.X)
+                {
+                    if ((this.selectedImageInfoList != null) && (this.selectedImageInfoList.Count > 0))
+                    {
+                        cutImageInfoList = new List<clsImage>();
+                        cutImageInfoList.AddRange(selectedImageInfoList);
+                        selectedImageInfoList = null;
+
+                        ImageInfoList.RemoveAll(imageInfo => imageInfo.Selected == true);
+                        FreshListview(ImageInfoList);
+                    } 
+                }
+                else if (e.KeyCode == Keys.V)
+                {
+                    int insertIndex = ImageInfoList.FindIndex(imageInfo => imageInfo.Selected == true);
+                    if (insertIndex != -1)
+                    {
+                        if (insertIndex < ImageInfoList.Count)
+                            ImageInfoList.InsertRange(insertIndex, cutImageInfoList);
+                        else
+                            ImageInfoList.AddRange(cutImageInfoList);
+
+                        ImageInfoList.ForEach(imageInfo => imageInfo.Selected = false);
+
+                        cutImageInfoList.Clear();
+                        selectedImageInfoList = null;
+                        FreshListview(ImageInfoList);
+                    }
+                }
+            }
+        }
+        #endregion
+
+        private void UpdateCount()
+        {
+            int totalCount = (this.ImageInfoList != null) ? this.ImageInfoList.Count : 0;
+            int selectCount = (this.selectedImageInfoList != null) ? this.selectedImageInfoList.Count : 0;
+            int cutCount = (this.cutImageInfoList != null) ? this.cutImageInfoList.Count : 0;
+
+            this.lbl_ImageCount.Text = string.Format("Count：{0} 选中：{1} 剪切：{2}", totalCount, selectCount, cutCount);
+        }
 
 
 
